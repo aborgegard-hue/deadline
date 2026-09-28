@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111110">
+  <meta name="description" content="Deadline UF skapar ett murder mystery-spel i brevformat. Öppna brevet, granska polisrapporten och följ ledtrådarna.">
+  <title>Deadline UF – Ett fall väntar i brevet</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111110'/%3E%3Cpath d='M17 13h14c16 0 24 8 24 19S47 51 31 51H17z' fill='none' stroke='%23e7dfd0' stroke-width='6'/%3E%3Ccircle cx='48' cy='47' r='5' fill='%23ca4b35'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: dark; --ink:#111110; --paper:#e7dfd0; --muted:#a8a195; --line:#514d47; --accent:#ca4b35; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--ink); color:var(--paper); font-family:Arial, Helvetica, sans-serif; }
+    a { color:inherit; }
+    a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
+    .wrap { width:min(100% - 48px, 1320px); margin:auto; }
+    .top { display:flex; justify-content:space-between; align-items:center; min-height:88px; border-bottom:1px solid var(--line); gap:24px; }
+    .logo { font-size:1.38rem; font-weight:900; letter-spacing:-.085em; text-decoration:none; white-space:nowrap; }
+    .logo span { color:var(--accent); }
+    .top nav { display:flex; gap:32px; align-items:center; }
+    .top nav a { font-size:.82rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700; text-decoration:none; }
+    .top nav a:hover { color:var(--accent); }
+    .hero { min-height:min(760px, calc(100svh - 88px)); display:grid; grid-template-columns: 1.35fr .65fr; align-items:stretch; border-bottom:1px solid var(--line); }
+    .hero-copy { display:flex; flex-direction:column; justify-content:space-between; padding:58px 36px 70px 0; }
+    .eyebrow { font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.22em; color:var(--accent); }
+    h1,h2,p { margin-top:0; }
+    h1 { max-width:960px; margin:70px 0 48px; font-size:clamp(4.8rem, 10.8vw, 11.5rem); line-height:.82; letter-spacing:-.09em; text-transform:uppercase; font-weight:900; }
+    h1 em { display:block; font-style:normal; color:var(--accent); }
+    .hero-bottom { display:flex; justify-content:space-between; gap:34px; align-items:end; }
+    .intro { max-width:410px; font-family:Georgia, 'Times New Roman', serif; font-size:clamp(1.35rem,2.1vw,2rem); line-height:1.25; letter-spacing:-.035em; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:34px; min-height:58px; padding:0 22px; background:var(--paper); color:var(--ink); font-size:.8rem; font-weight:900; letter-spacing:.13em; text-decoration:none; text-transform:uppercase; white-space:nowrap; transition:background .2s,color .2s,transform .2s; }
+    .button:hover { background:var(--accent); color:#fff; transform:translateY(-2px); }
+    .button span { font-size:1.3rem; line-height:1; }
+    .file { border-left:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden; padding:58px 38px 42px; background:repeating-linear-gradient(0deg,transparent 0,transparent 51px,rgba(231,223,208,.045) 52px,transparent 53px); }
+    .file::after { content:"?"; position:absolute; top:16%; left:-8%; color:rgba(231,223,208,.06); font-size:clamp(24rem,43vw,45rem); font-family:Georgia,serif; line-height:1; pointer-events:none; }
+    .file-top,.file-bottom { position:relative; z-index:1; }
+    .file-top { display:flex; justify-content:space-between; gap:16px; color:var(--muted); font-size:.75rem; letter-spacing:.16em; font-weight:700; text-transform:uppercase; }
+    .file-bottom { border-top:1px solid var(--line); padding-top:22px; }
+    .file-bottom p { margin:0 0 18px; font-size:.75rem; text-transform:uppercase; letter-spacing:.18em; color:var(--muted); }
+    .file-bottom strong { display:block; font-family:Georgia,serif; font-weight:400; font-size:clamp(2.3rem,4vw,4.4rem); line-height:.98; letter-spacing:-.06em; }
+    .strip { display:flex; justify-content:space-between; gap:20px; padding:20px 0; color:var(--muted); font-size:.75rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; border-bottom:1px solid var(--line); }
+    .section { padding:130px 0 150px; }
+    .section-head { display:grid; grid-template-columns:1fr 2fr; gap:40px; margin-bottom:80px; }
+    .section h2 { font-size:clamp(3.2rem,7vw,7.8rem); line-height:.92; letter-spacing:-.075em; text-transform:uppercase; margin:0; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }
+    .step { min-height:290px; padding:28px 30px 25px 0; display:flex; flex-direction:column; justify-content:space-between; border-right:1px solid var(--line); }
+    .step + .step { padding-left:30px; }
+    .step:last-child { border:0; }
+    .num { color:var(--accent); font-size:.8rem; font-weight:900; letter-spacing:.18em; }
+    .step h3 { margin:0 0 15px; font-size:clamp(1.7rem,2.6vw,2.6rem); text-transform:uppercase; letter-spacing:-.06em; line-height:1; }
+    .step p { max-width:320px; color:var(--muted); line-height:1.5; font-size:1rem; margin:0; }
+    .closing { background:var(--paper); color:var(--ink); padding:110px 0 120px; }
+    .closing .eyebrow { color:#9e392a; }
+    .closing h2 { max-width:980px; margin:50px 0 28px; font-size:clamp(3.9rem,9vw,10rem); line-height:.86; letter-spacing:-.085em; text-transform:uppercase; }
+    .closing p { max-width:650px; margin:0; font-family:Georgia,serif; font-size:clamp(1.3rem,2.2vw,2rem); line-height:1.28; }
+    footer { padding:28px 0; display:flex; align-items:center; justify-content:space-between; gap:20px; color:var(--muted); font-size:.8rem; }
+    footer .logo { color:var(--paper); font-size:1.1rem; }
+    @media(max-width:900px) {
+      .hero { grid-template-columns:1fr; min-height:0; }
+      .hero-copy { min-height:640px; padding-right:0; }
+      h1 { font-size:clamp(4.9rem,14vw,9rem); }
+      .file { min-height:300px; border-left:0; border-top:1px solid var(--line); }
+      .file::after { font-size:27rem; top:-45%; left:36%; }
+      .section-head { grid-template-columns:1fr; gap:25px; }
+    }
+    @media(max-width:600px) {
+      .wrap { width:min(100% - 36px,1320px); }
+      .top { min-height:72px; }
+      .top nav { gap:16px; }
+      .top nav a { font-size:.7rem; letter-spacing:.04em; }
+      .top nav a:first-child { display:none; }
+      .hero-copy { min-height:570px; padding:32px 0 46px; }
+      h1 { margin:58px 0 48px; font-size:clamp(4.2rem,17vw,7rem); }
+      .hero-bottom { display:block; }
+      .intro { margin-bottom:32px; }
+      .button { width:100%; justify-content:space-between; }
+      .file { padding:32px 20px; min-height:250px; }
+      .file-bottom strong { font-size:2.5rem; }
+      .strip { font-size:.65rem; }
+      .strip span:last-child { display:none; }
+      .section { padding:86px 0 95px; }
+      .section-head { margin-bottom:55px; }
+      .steps { display:block; }
+      .step,.step + .step { min-height:220px; padding:24px 0; border-right:0; border-bottom:1px solid var(--line); }
+      .closing { padding:88px 0 95px; }
+      .closing h2 { margin-top:40px; }
+    }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .button { transition:none; } }
+  </style>
+</head>
+<body>
+  <header class="wrap top">
+    <a class="logo" href="#top" aria-label="Deadline UF, till toppen">DEADLINE<span>.</span> UF</a>
+    <nav aria-label="Huvudmeny"><a href="#spelet">Spelet</a><a href="#sa-funkar-det">Så fungerar det</a></nav>
+  </header>
+  <main id="top">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow">Murder mystery · Ett spel från Deadline UF</div>
+        <h1 id="hero-title">Ett brev.<br>Ett fall.<em>Din tur.</em></h1>
+        <div class="hero-bottom">
+          <p class="intro">I brevet väntar en polisrapport och ledtrådar. Vad hände egentligen?</p>
+          <a class="button" href="#sa-funkar-det">Upptäck spelet <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="file" aria-label="Ett fall att undersöka">
+        <div class="file-top"><span>Deadline UF</span><span>01 / Fallet</span></div>
+        <div class="file-bottom"><p>Allt börjar med ett brev</p><strong>Läs mellan<br>raderna.</strong></div>
+      </div>
+    </section>
+    <div class="wrap strip"><span>Polisrapport / Ledtrådar / Din slutsats</span><span>Fallet väntar på dig</span></div>
+    <section class="section wrap" id="sa-funkar-det" aria-labelledby="how-title">
+      <div class="section-head"><div class="eyebrow">Så fungerar det</div><h2 id="how-title">Följ spåren.<br>Hitta svaret.</h2></div>
+      <div class="steps">
+        <article class="step"><span class="num">01 / Öppna</span><div><h3>Ta emot brevet</h3><p>Berättelsen börjar när du öppnar brevet och kliver in i fallet.</p></div></article>
+        <article class="step"><span class="num">02 / Granska</span><div><h3>Läs materialet</h3><p>Gå igenom polisrapporten och ledtrådarna. Lägg märke till detaljerna.</p></div></article>
+        <article class="step"><span class="num">03 / Lös</span><div><h3>Dra din slutsats</h3><p>Väg ihop det du hittar och försök lista ut vad som har hänt.</p></div></article>
+      </div>
+    </section>
+    <section class="closing" id="spelet" aria-labelledby="closing-title"><div class="wrap"><div class="eyebrow">Deadline UF / Murder mystery</div><h2 id="closing-title">Vad missade<br>alla andra?</h2><p>En polisrapport. Flera ledtrådar. Ett fall där det är du som behöver se sambanden.</p></div></section>
+  </main>
+  <footer class="wrap"><a class="logo" href="#top">DEADLINE<span>.</span> UF</a><span>© 2026 Deadline UF</span></footer>
+</body>
+</html>
