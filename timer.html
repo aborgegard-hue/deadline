@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111110">
+<title>Deadline UF – Speltest</title>
+<style>
+:root{color-scheme:dark;--ink:#111110;--paper:#e7dfd0;--muted:#a8a195;--line:#514d47;--accent:#ca4b35}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--paper);font-family:Arial,Helvetica,sans-serif}a{color:inherit}button,input{font:inherit}button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:5px}.wrap{width:min(100% - 40px,1100px);margin:auto}header{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}.logo{font-size:1.38rem;font-weight:900;letter-spacing:-.085em;text-decoration:none}.logo span{color:var(--accent)}header>a:last-child{font-size:.8rem}main{padding:54px 0 80px}.eyebrow{color:var(--accent);font-size:.75rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase}h1{font-size:clamp(3rem,8vw,6rem);text-transform:uppercase;letter-spacing:-.075em;line-height:.95;margin:24px 0}p{line-height:1.6}.intro{color:var(--muted);max-width:650px}.dashboard{margin:36px 0 48px;padding:32px;border:1px solid var(--line);background:repeating-linear-gradient(0deg,transparent 0,transparent 51px,rgba(231,223,208,.035) 52px,transparent 53px)}.timer{font-size:clamp(4rem,14vw,9rem);font-weight:900;letter-spacing:-.06em;font-variant-numeric:tabular-nums;line-height:1.1;margin:12px 0 24px}.controls{display:flex;flex-wrap:wrap;gap:12px}button{cursor:pointer;min-height:48px;padding:12px 22px;border:1px solid var(--line);background:transparent;color:var(--paper);font-weight:800}button.primary{background:var(--paper);color:var(--ink);border-color:var(--paper)}button:hover:not(:disabled){background:var(--accent);color:white}button:disabled{cursor:default;opacity:.45}.mode{display:flex;gap:10px;align-items:center;margin-top:24px;font-size:.9rem;color:var(--muted)}input{accent-color:var(--accent);width:18px;height:18px}.notice{min-height:1.6em;color:var(--paper);margin-bottom:0}.next{color:var(--muted);font-size:.9rem}.clues{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.clue{border:1px solid var(--line);padding:24px;min-height:220px}.clue.open{border-color:var(--accent)}.tag{color:var(--muted);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.open .tag{color:var(--accent)}h2{font-size:1.3rem;margin:16px 0 12px}h3{font-size:1.2rem;margin:20px 0 10px}.clue p{color:var(--muted);margin-bottom:0}.clue.open p{color:var(--paper)}[hidden]{display:none!important}footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.8rem}dialog{background:var(--ink);color:var(--paper);border:1px solid var(--line);padding:28px;max-width:min(90vw,460px)}dialog::backdrop{background:rgba(0,0,0,.8)}dialog p{margin-top:0}@media(max-width:700px){main{padding-top:36px}.dashboard{padding:22px}.clues{grid-template-columns:1fr}.clue{min-height:160px}header{min-height:72px}.controls button{flex:1}.mode{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="wrap"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a><a href="index.html">← Till startsidan</a></header>
+<main class="wrap">
+<div class="eyebrow">Case 00 / Testversion</div>
+<h1>Utredningen börjar nu.</h1>
+<p class="intro">Öppna ert bevismaterial och starta klockan när alla är redo. Tre ledtrådar öppnas efter 10, 20 och 40 minuters speltid. Klockan räknar upp och fortsätter efter den sista ledtråden.</p>
+<section class="dashboard" aria-label="Spelklocka">
+<div class="eyebrow" id="status">Redo att starta</div>
+<div class="timer" id="clock" role="timer" aria-label="Förfluten speltid" aria-live="off">00:00</div>
+<div class="controls"><button class="primary" id="start" type="button">Starta spelet</button><button id="pause" type="button" disabled>Pausa</button><button id="reset" type="button" disabled>Återställ</button></div>
+<label class="mode"><input type="checkbox" id="fast">Snabbtest: ledtrådar efter 10, 20 och 40 sekunder (60× hastighet).</label>
+<p class="next" id="next">Nästa ledtråd öppnas efter 10 minuter.</p>
+<p class="notice" id="notice" role="status" aria-live="polite" aria-atomic="true">Tryck på Starta spelet för att börja.</p>
+</section>
+<section aria-labelledby="evidence-title"><h2 id="evidence-title">Inkommande ledtrådar</h2><div class="clues">
+<article class="clue" id="clue-0"><span class="tag">01 / Efter 10 min</span><h3>Ledtråd 1</h3><p class="locked">Låst. Väntar på nytt material.</p><div class="content" hidden></div></article>
+<article class="clue" id="clue-1"><span class="tag">02 / Efter 20 min</span><h3>Ledtråd 2</h3><p class="locked">Låst. Väntar på nytt material.</p><div class="content" hidden></div></article>
+<article class="clue" id="clue-2"><span class="tag">03 / Efter 40 min</span><h3>Ledtråd 3</h3><p class="locked">Låst. Väntar på nytt material.</p><div class="content" hidden></div></article>
+</div></section>
+<noscript><p>Aktivera JavaScript i webbläsaren för att använda timern och öppna ledtrådarna.</p></noscript>
+</main>
+<footer class="wrap">Deadline UF · Speltest · Ledtrådarnas texter är platshållare.</footer>
+<dialog id="reset-dialog"><p>Återställa speltestet? Klockan nollställs och alla ledtrådar låses igen.</p><div class="controls"><button id="cancel-reset" type="button" autofocus>Avbryt</button><button id="confirm-reset" type="button">Återställ spelet</button></div></dialog>
+<script>
+'use strict';
+// BYT UT title OCH text MOT ERA EGNA LEDTRÅDAR. minute ÄR SPELTID I MINUTER.
+const CLUES = [
+  { minute: 10, title: 'Ledtråd 1', text: 'TESTTEXT – Er första ledtråd visas här. Byt ut denna text mot materialet till ert fall.' },
+  { minute: 20, title: 'Ledtråd 2', text: 'TESTTEXT – Er andra ledtråd visas här. Byt ut denna text mot materialet till ert fall.' },
+  { minute: 40, title: 'Ledtråd 3', text: 'TESTTEXT – Er tredje ledtråd visas här. Byt ut denna text mot materialet till ert fall.' }
+];
+const KEY = 'deadline-uf-case00-timer-v1';
+const $ = id => document.getElementById(id);
+const fresh = () => ({elapsed:0, startedAt:null, speed:1, begun:false});
+let state = fresh();
+let unlocked = new Set();
+let storageAvailable = true;
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+  if (saved && Number.isFinite(saved.elapsed) && saved.elapsed >= 0 &&
+      (saved.startedAt === null || (Number.isFinite(saved.startedAt) && saved.startedAt > 0)) &&
+      [1,60].includes(saved.speed) && typeof saved.begun === 'boolean' &&
+      (saved.begun || (saved.elapsed === 0 && saved.startedAt === null))) state = saved;
+} catch (_) { storageAvailable = false; }
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch (_) { storageAvailable = false; }
+}
+function elapsed() {
+  return state.elapsed + (state.startedAt === null ? 0 : Math.max(0,Date.now()-state.startedAt)*state.speed);
+}
+function format(ms) {
+  const seconds = Math.floor(ms/1000);
+  return String(Math.floor(seconds/60)).padStart(2,'0') + ':' + String(seconds%60).padStart(2,'0');
+}
+function render() {
+  const time = elapsed();
+  $('clock').textContent = format(time);
+  $('status').textContent = !state.begun ? 'Redo att starta' : state.startedAt === null ? 'Utredningen pausad' : state.speed === 60 ? 'Snabbtest pågår · 60×' : 'Utredningen pågår';
+  $('start').disabled = state.startedAt !== null;
+  $('start').textContent = state.begun ? 'Fortsätt' : 'Starta spelet';
+  $('pause').disabled = state.startedAt === null;
+  $('reset').disabled = !state.begun;
+  $('fast').checked = state.speed === 60;
+  $('fast').disabled = state.begun;
+  const newlyOpened = [];
+  CLUES.forEach((clue,i) => {
+    const open = time >= clue.minute*60000;
+    const card = $('clue-'+i);
+    card.classList.toggle('open',open);
+    card.querySelector('.locked').hidden = open;
+    card.querySelector('.content').hidden = !open;
+    card.querySelector('h3').textContent = open ? clue.title : 'Ledtråd '+(i+1);
+    card.querySelector('.tag').textContent = String(i+1).padStart(2,'0')+' / '+(open ? 'Mottagen' : 'Efter '+clue.minute+' min');
+    if (open && !unlocked.has(i)) {
+      // Texten förs in först när ledtråden öppnas; inga externa anrop behövs.
+      const p = document.createElement('p');
+      p.textContent = clue.text;
+      card.querySelector('.content').replaceChildren(p);
+      unlocked.add(i);
+      newlyOpened.push(i+1);
+    }
+  });
+  if (newlyOpened.length) $('notice').textContent = 'Nytt material: ledtråd '+newlyOpened.join(' och ')+' har öppnats. Se nedan.';
+  const next = CLUES.find(clue => time < clue.minute*60000);
+  $('next').textContent = next ? 'Nästa ledtråd om '+format(Math.ceil((next.minute*60000-time)/1000)*1000)+' speltid.' : 'Alla tre ledtrådar har öppnats. Klockan fortsätter.';
+}
+$('start').addEventListener('click',() => {
+  if (state.startedAt !== null) return;
+  state.begun = true;
+  state.startedAt = Date.now();
+  save();
+  $('notice').textContent = 'Klockan är igång.';
+  render();
+});
+$('pause').addEventListener('click',() => {
+  if (state.startedAt === null) return;
+  state.elapsed = elapsed();
+  state.startedAt = null;
+  save();
+  $('notice').textContent = 'Pausat. Tryck på Fortsätt när ni är redo.';
+  render();
+});
+$('fast').addEventListener('change',() => {
+  if (state.begun) return;
+  state.speed = $('fast').checked ? 60 : 1;
+  save(); render();
+});
+$('reset').addEventListener('click',() => $('reset-dialog').showModal());
+$('cancel-reset').addEventListener('click',() => $('reset-dialog').close());
+$('confirm-reset').addEventListener('click',() => {
+  state = fresh();
+  unlocked.clear();
+  CLUES.forEach((_,i) => $('clue-'+i).querySelector('.content').replaceChildren());
+  save(); render();
+  $('notice').textContent = 'Återställt. Redo för ett nytt test.';
+  $('reset-dialog').close();
+  $('start').focus();
+});
+if (state.begun) $('notice').textContent = 'Ditt tidigare speltest har återställts.';
+render();
+if (!storageAvailable) $('notice').textContent = 'Webbläsaren tillåter inte sparande här. Håll sidan öppen under testet.';
+// Tidsstämpeln gör att klockan hinner ikapp även om fliken legat i bakgrunden.
+setInterval(render,250);
+document.addEventListener('visibilitychange',render);
+window.addEventListener('pageshow',render);
+</script>
+</body>
+</html>
