@@ -54,7 +54,7 @@
   async function identity() {
     const { data, error } = await client.auth.getSession();
     if (error) throw new Error('Kunde inte kontrollera din session. Ladda om utan att rensa webbdata.');
-    if (data.session) return;
+    if (data.session) return data.session.user.id;
     if (cfg.turnstileSiteKey && !captchaToken) throw new Error('Slutför säkerhetskontrollen först.');
     try {
       const result = await client.auth.signInAnonymously({ options: { captchaToken: captchaToken || undefined } });
@@ -63,6 +63,7 @@
         if (result.error.status === 429) throw new Error('För många anslutningar från samma nätverk. Vänta och försök igen.');
         throw new Error('Kunde inte skapa en spelarsession. Kontrollera anslutningen, Anonymous Sign-Ins och eventuell CAPTCHA.');
       }
+      return result.data.user.id;
     } finally {
       captchaToken = '';
       if (captchaWidget !== undefined) window.turnstile.reset(captchaWidget);
@@ -145,14 +146,15 @@
     show('clue-panel', playing || finished); show('vote-form', playing);
     show('finish', !!s.can_finish); show('solution', finished);
     text('lobby-help', lobby ? 'Kontrollera att bara rätt personer är med. När rollerna delas ut låses gruppen.' : briefing ? 'Läs era roller privat. Läs sedan den gemensamma bakgrunden och låt värden starta.' : 'Privata hemligheter visas bara på respektive spelares mobil.');
-    const people = s.players.map(p => {
+    const people = s.players.map((p, index) => {
       const li = make('li'), who = make('div', '', 'identity');
-      who.append(make('strong', p.name + (p.id === s.me.id ? ' (du)' : '')), make('small', p.persona || 'Inväntar roll'));
+      const label = p.persona || `Spelare ${index + 1}`;
+      who.append(make('strong', label + (p.id === s.me.id ? ' (du)' : '')), make('small', lobby ? (p.id === s.me.id && s.me.is_host ? 'Värd / inväntar roll' : 'Inväntar roll') : ''));
       li.append(who, make('small', briefing ? (p.ready ? 'Redo' : 'Läser') : playing ? (p.voted ? 'Anklagelse klar' : '') : ''));
       if (lobby && s.me.is_host && p.id !== s.me.id) {
         const kick = make('button', 'Ta bort', 'kick'); kick.type = 'button';
-        kick.setAttribute('aria-label', `Ta bort ${p.name} från lobbyn`);
-        kick.onclick = () => { if (confirm(`Ta bort ${p.name}?`)) act('kick', { player_id: p.id }); };
+        kick.setAttribute('aria-label', `Ta bort ${label} från lobbyn`);
+        kick.onclick = () => { if (confirm(`Ta bort ${label}?`)) act('kick', { player_id: p.id }); };
         li.append(kick);
       }
       return li;
@@ -160,11 +162,11 @@
     $('players').replaceChildren(...people);
     $('clues').replaceChildren(...s.clues.map(c => { const box = make('article', '', 'clue'); box.append(make('h4', c.title), make('p', c.body)); return box; }));
     const selected = $('suspect').value || s.me.vote || '';
-    const options = [new Option('Välj en person', ''), ...s.players.map(p => new Option(`${p.persona} (${p.name})`, p.id))];
+    const options = [new Option('Välj en person', ''), ...s.players.map(p => new Option(p.persona || `Spelare ${s.players.indexOf(p) + 1}`, p.id))];
     $('suspect').replaceChildren(...options); $('suspect').value = selected;
     text('vote-status', s.me.voted ? 'Din slutanklagelse är låst. Inga andras val visas innan slutet.' : 'Du lämnar ditt val privat.');
     if (finished && s.solution) {
-      text('solution-person', `${s.solution.persona} – spelad av ${s.solution.player}`);
+      text('solution-person', s.solution.persona);
       text('solution-text', s.solution.text);
       const killer = s.players.find(p => p.persona === s.solution.persona);
       text('my-result', !s.me.vote ? 'Du lämnade ingen slutanklagelse.' : s.me.vote === killer?.id ? 'Du pekade ut rätt person.' : 'Du pekade ut en annan person.');
@@ -199,7 +201,11 @@
     if (busy) return;
     busy = true; clearTimeout(pollTimer); controls();
     try {
-      if (action === 'create' || action === 'join') await identity();
+      if (action === 'create' || action === 'join') {
+        const uid = await identity();
+        // Stable internal label for retries; players use their persona names.
+        payload = { ...payload, name: 'Spelare ' + uid.replace(/-/g, '').slice(0, 16) };
+      }
       const s = await rpc(action, { ...(state ? { game_id: state.id } : {}), ...payload });
       if (s.left) { localStorage.removeItem(storageKey); saved = null; goBack(); }
       else accept(s);
@@ -212,6 +218,8 @@
     $('role-fields').replaceChildren();
     for (const id of ['persona-name','persona-job','murderer']) text(id, '');
     show('role-content', false); show('room', false); show('entry', true); show('welcome', true);
+    show('create-form', true);
+    const url = new URL(location.href); url.searchParams.delete('kod'); history.replaceState(null, '', url.href);
     show('resume', !!saved); controls();
     notice('Din spelarsession finns kvar i den här webbläsaren.', true);
     $('entry').scrollIntoView({ block: 'start' });
@@ -221,7 +229,7 @@
     busy = true; controls();
     try {
       const { data, error } = await client.auth.getSession();
-      if (error || !data.session) throw new Error('Den gamla spelarsessionen saknas. Återgå till samma webbläsare som tidigare. En roll kan inte återtas enbart med ett namn.');
+      if (error || !data.session) throw new Error('Den gamla spelarsessionen saknas. Återgå till samma webbläsare som tidigare. En roll kan bara återtas med samma spelarsession.');
       accept(await rpc('state', { game_id: saved.id }));
       notice('Du är tillbaka i samma omgång med samma roll.', true);
     } catch (e) {
@@ -230,10 +238,10 @@
     } finally { busy = false; controls(); schedule(); }
   }
   $('create-form').addEventListener('submit', e => {
-    e.preventDefault(); act('create', { name: $('host-name').value.trim(), capacity: Number($('capacity').value) });
+    e.preventDefault(); act('create', { capacity: Number($('capacity').value) });
   });
   $('join-form').addEventListener('submit', e => {
-    e.preventDefault(); act('join', { name: $('join-name').value.trim(), code: $('code').value.toUpperCase().replace(/[\s-]/g, '') });
+    e.preventDefault(); act('join', { code: $('code').value.toUpperCase().replace(/[\s-]/g, '') });
   });
   $('vote-form').addEventListener('submit', e => {
     e.preventDefault();
@@ -257,7 +265,13 @@
   setInterval(tick, 1000);
   async function init() {
     const code = new URL(location.href).searchParams.get('kod');
-    if (code) $('code').value = code.toUpperCase().replace(/[^A-F0-9]/g, '').slice(0, 10);
+    const inviteCode = (code || '').toUpperCase().replace(/[\s-]/g, '');
+    const validInvite = /^[A-F0-9]{10}$/.test(inviteCode);
+    if (code) {
+      $('code').value = inviteCode;
+      show('create-form', false);
+      text('code-help', 'Inbjudan tar dig direkt till den här lobbyn.');
+    }
     if (!cfg.supabaseUrl || !cfg.supabasePublishableKey) {
       notice('Databasen är inte ansluten än. Spelsidan är upplagd, men lobby och roller aktiveras först när Supabase har kopplats in.');
       return;
@@ -280,14 +294,18 @@
       await loadScript('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit');
       captchaWidget = window.turnstile.render('#captcha', {
         sitekey: cfg.turnstileSiteKey, theme: 'dark',
-        callback: token => { captchaToken = token; },
+        callback: token => { captchaToken = token; if (validInvite && !state) act('join', { code: inviteCode }); },
         'expired-callback': () => { captchaToken = ''; },
         'error-callback': () => { captchaToken = ''; notice('Säkerhetskontrollen misslyckades. Försök igen.'); }
       });
     }
     controls(); show('resume', !!saved);
     notice('Redo. Skapa en lobby eller gå med via en spelkod.', true);
-    if (saved && (!code || saved.code === $('code').value)) await resume();
+    if (saved && (!code || saved.code === inviteCode) && data.session) await resume();
+    else if (validInvite && (!cfg.turnstileSiteKey || data.session || captchaToken)) {
+      notice('Ansluter till spelet...');
+      await act('join', { code: inviteCode });
+    } else if (code && !validInvite) notice('Inbjudningslänken har en ogiltig spelkod. Be värden om en ny länk.');
   }
   init().catch(e => { client = null; controls(); notice(e.message); });
 })();
