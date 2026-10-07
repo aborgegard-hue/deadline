@@ -115,7 +115,7 @@ begin
     insert into deadline_private.rate_limits(uid,operation,bucket,count) values(u,action,bucket_time,1)
       on conflict (uid,operation,bucket) do update set count=deadline_private.rate_limits.count+1
       returning count into attempt;
-    if attempt > case when action='create' then 10 else 20 end then
+    if attempt > (case when action='create' then 10 else 20 end) then
       return jsonb_build_object('error','För många försök. Vänta en stund.');
     end if;
     label := btrim(payload->>'name');
