@@ -3,31 +3,28 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111110"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow">
-<title>Deadline UF &ndash; Spelrummet</title>
+<title>Deadline UF &ndash; G&aring; med i spelet</title>
 <link rel="stylesheet" href="assets/spel.css">
-<script>if(new URLSearchParams(location.search).has('kod')){document.documentElement.hidden=true;location.replace('anslut.html'+location.search);}</script>
 <script src="assets/spel-config.js" defer></script><script src="assets/spel.js?v=20261007-joinform" defer></script>
 </head>
 <body>
-<header class="wrap top"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a><nav aria-label="Huvudmeny"><a href="index.html">Startsidan</a><a href="timer.html">Timertest &nearr;</a></nav></header>
+<header class="wrap top"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a></header>
 <main class="wrap">
-<section class="heading" id="welcome"><p class="eyebrow">Spelrummet / Teknisk testversion</p><h1>En av er<br><em>vet mer.</em></h1><p class="lead">Samma bord. Olika hemligheter.<br>En privat roll i varje mobil.</p></section>
+<section id="welcome" style="padding:32px 0 8px"><p class="eyebrow">Deadline UF / Inbjudan</p></section>
 <div id="notice" class="notice" role="status" aria-live="polite">Kontrollerar anslutningen...</div>
 <noscript><p class="notice">Aktivera JavaScript f&ouml;r att anv&auml;nda spelrummet.</p></noscript>
 <section id="entry" aria-label="Anslut till ett spel">
-<p class="note">Testfall f&ouml;r 4&ndash;8 personer, cirka 20 minuter. Du f&aring;r ditt namn i spelet n&auml;r rollerna delas ut. Anv&auml;nd samma webbl&auml;sare hela spelet. Anv&auml;nd inte privat l&auml;ge och rensa inte webbdata under omg&aring;ngen.</p>
+
 <button id="resume" type="button" class="secondary" hidden>Forts&auml;tt senaste spelet</button>
 <div id="captcha"></div>
-<div class="entry-grid">
-<form id="create-form" class="panel"><p class="eyebrow">01 / Samla gruppen</p><h2>Skapa en lobby.</h2>
-<label for="capacity">Antal spelare, inklusive dig</label><select id="capacity" name="capacity"><option value="4">4 spelare</option><option value="5">5 spelare</option><option value="6" selected>6 spelare</option><option value="7">7 spelare</option><option value="8">8 spelare</option></select>
-<button id="create" type="submit" disabled>Skapa lobby <span aria-hidden="true">&nearr;</span></button><p class="small">Du blir v&auml;rd och f&aring;r ocks&aring; en roll.</p></form>
-<form id="join-form" class="panel"><p class="eyebrow">02 / Ta din plats</p><h2>G&aring; med i spelet.</h2>
-<label for="join-name">Ditt namn eller smeknamn</label><input id="join-name" name="name" maxlength="24" autocomplete="nickname" required placeholder="Ditt namn">
+<div class="entry-grid" style="grid-template-columns:1fr;max-width:560px">
+
+<form id="join-form" class="panel"><h2>G&aring; med i spelet.</h2><p class="small">Ange ditt namn f&ouml;r lobbyn. Du f&aring;r ett rollnamn n&auml;r spelet b&ouml;rjar.</p>
 <label for="code">Spelkod</label><input id="code" name="code" maxlength="14" autocapitalize="characters" autocomplete="off" spellcheck="false" required placeholder="10 tecken" aria-describedby="code-help"><p id="code-help" class="small">Skriv koden eller skanna v&auml;rdens QR-kod f&ouml;r att &ouml;ppna anslutningssidan.</p>
+<label for="join-name">Ditt namn eller smeknamn</label><input id="join-name" name="name" maxlength="24" autocomplete="nickname" required placeholder="Ditt namn">
 <button id="join" type="submit" disabled>G&aring; med <span aria-hidden="true">&nearr;</span></button></form>
 </div>
-<details class="setup"><summary>F&ouml;r administrat&ouml;ren: anslut databasen</summary><p>K&ouml;r <code>supabase/01_schema.sql</code> och sedan <code>supabase/02_demo.sql</code> i ett separat Supabase-projekt. Aktivera Anonymous Sign-Ins. Fyll i projektadressen och en <strong>publishable key</strong> i <code>assets/spel-config.js</code>. L&auml;gg aldrig en hemlig administrat&ouml;rsnyckel p&aring; hemsidan.</p><p>Instruktioner finns i <a href="https://github.com/aborgegard-hue/deadline/blob/main/SPEL-SETUP.md" rel="noreferrer" target="_blank">SPEL-SETUP.md</a>.</p></details>
+
 </section>
 <section id="room" hidden aria-label="Din spelomg&aring;ng">
 <div class="room-head"><div><p class="eyebrow" id="phase"></p><h2 id="case-title"></h2></div><div><span class="small">Spelkod</span><strong id="room-code" class="room-code"></strong></div><div id="clock-box" hidden><span class="small">Tid kvar</span><strong id="clock" class="room-code" role="timer">20:00</strong></div></div>

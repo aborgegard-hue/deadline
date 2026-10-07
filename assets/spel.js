@@ -11,7 +11,7 @@
   let pollTimer, qrPromise, renderedQr = '', lastPoll = 0;
   let syncServerTime = 0, syncPerformance = 0, queue = Promise.resolve();
   let captchaToken = '', captchaWidget, saved = null;
-  const show = (id, yes) => { $(id).hidden = !yes; };
+  const show = (id, yes) => { const element = $(id); if (element) element.hidden = !yes; };
   const text = (id, value) => { $(id).textContent = value ?? ''; };
   const make = (tag, value, cls) => {
     const node = document.createElement(tag); node.textContent = value ?? '';
@@ -38,7 +38,7 @@
     } catch { return false; }
   }
   function controls() {
-    $('create').disabled = !client || busy;
+    if ($('create')) $('create').disabled = !client || busy;
     $('join').disabled = !client || busy;
     if (!state) return;
     const off = busy || blocked;
@@ -97,7 +97,7 @@
     remember(s); render();
   }
   function inviteLink() {
-    const url = new URL(location.href); url.search = ''; url.hash = '';
+    const url = new URL('anslut.html', location.href); url.search = ''; url.hash = '';
     url.searchParams.set('kod', state.code); return url.href;
   }
   async function drawQr() {
@@ -148,7 +148,7 @@
     text('lobby-help', lobby ? 'Kontrollera att bara rätt personer är med. När rollerna delas ut låses gruppen.' : briefing ? 'Läs era roller privat. Läs sedan den gemensamma bakgrunden och låt värden starta.' : 'Privata hemligheter visas bara på respektive spelares mobil.');
     const people = s.players.map((p, index) => {
       const li = make('li'), who = make('div', '', 'identity');
-      const label = p.persona || `Spelare ${index + 1}`;
+      const label = p.persona || (/^Spelare [a-f0-9]{16}$/.test(p.name) ? `Spelare ${index + 1}` : p.name);
       who.append(make('strong', label + (p.id === s.me.id ? ' (du)' : '')), make('small', lobby ? (p.id === s.me.id && s.me.is_host ? 'Värd / inväntar roll' : 'Inväntar roll') : ''));
       li.append(who, make('small', briefing ? (p.ready ? 'Redo' : 'Läser') : playing ? (p.voted ? 'Anklagelse klar' : '') : ''));
       if (lobby && s.me.is_host && p.id !== s.me.id) {
@@ -204,7 +204,7 @@
       if (action === 'create' || action === 'join') {
         const uid = await identity();
         // Stable internal label for retries; players use their persona names.
-        payload = { ...payload, name: 'Spelare ' + uid.replace(/-/g, '').slice(0, 16) };
+        payload = { ...payload, name: payload.name || 'Spelare ' + uid.replace(/-/g, '').slice(0, 16) };
       }
       const s = await rpc(action, { ...(state ? { game_id: state.id } : {}), ...payload });
       if (s.left) { localStorage.removeItem(storageKey); saved = null; goBack(); }
@@ -219,6 +219,8 @@
     for (const id of ['persona-name','persona-job','murderer']) text(id, '');
     show('role-content', false); show('room', false); show('entry', true); show('welcome', true);
     show('create-form', true);
+    $('code').readOnly = false;
+    text('code-help', 'Be värden om en spelkod eller en ny QR-länk.');
     const url = new URL(location.href); url.searchParams.delete('kod'); history.replaceState(null, '', url.href);
     show('resume', !!saved); controls();
     notice('Din spelarsession finns kvar i den här webbläsaren.', true);
@@ -237,11 +239,14 @@
       if (e.gameError) { saved = null; localStorage.removeItem(storageKey); show('resume', false); }
     } finally { busy = false; controls(); schedule(); }
   }
-  $('create-form').addEventListener('submit', e => {
+  $('create-form')?.addEventListener('submit', e => {
     e.preventDefault(); act('create', { capacity: Number($('capacity').value) });
   });
   $('join-form').addEventListener('submit', e => {
-    e.preventDefault(); act('join', { code: $('code').value.toUpperCase().replace(/[\s-]/g, '') });
+    e.preventDefault();
+    const name = $('join-name').value.trim();
+    if (!name) { notice('Skriv ditt namn eller smeknamn.'); $('join-name').focus(); return; }
+    act('join', { name, code: $('code').value.toUpperCase().replace(/[\s-]/g, '') });
   });
   $('vote-form').addEventListener('submit', e => {
     e.preventDefault();
@@ -270,7 +275,8 @@
     if (code) {
       $('code').value = inviteCode;
       show('create-form', false);
-      text('code-help', 'Inbjudan tar dig direkt till den här lobbyn.');
+      $('code').readOnly = true;
+      text('code-help', 'Det här är spelet du är inbjuden till. Skriv ditt namn och gå med.');
     }
     if (!cfg.supabaseUrl || !cfg.supabasePublishableKey) {
       notice('Databasen är inte ansluten än. Spelsidan är upplagd, men lobby och roller aktiveras först när Supabase har kopplats in.');
@@ -294,18 +300,15 @@
       await loadScript('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit');
       captchaWidget = window.turnstile.render('#captcha', {
         sitekey: cfg.turnstileSiteKey, theme: 'dark',
-        callback: token => { captchaToken = token; if (validInvite && !state) act('join', { code: inviteCode }); },
+        callback: token => { captchaToken = token; },
         'expired-callback': () => { captchaToken = ''; },
         'error-callback': () => { captchaToken = ''; notice('Säkerhetskontrollen misslyckades. Försök igen.'); }
       });
     }
     controls(); show('resume', !!saved);
-    notice('Redo. Skapa en lobby eller gå med via en spelkod.', true);
+    notice(code ? 'Skriv ditt namn och tryck Gå med.' : 'Redo. Skapa en lobby eller gå med via en spelkod.', true);
     if (saved && (!code || saved.code === inviteCode) && data.session) await resume();
-    else if (validInvite && (!cfg.turnstileSiteKey || data.session || captchaToken)) {
-      notice('Ansluter till spelet...');
-      await act('join', { code: inviteCode });
-    } else if (code && !validInvite) notice('Inbjudningslänken har en ogiltig spelkod. Be värden om en ny länk.');
+    else if (code && !validInvite) notice('Inbjudningslänken har en ogiltig spelkod. Be värden om en ny länk.');
   }
   init().catch(e => { client = null; controls(); notice(e.message); });
 })();
