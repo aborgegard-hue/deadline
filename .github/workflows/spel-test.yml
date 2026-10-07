@@ -1,0 +1,40 @@
+name: Test spelmotor
+on:
+  push:
+    paths: ['assets/spel*', 'spel.html', 'supabase/**', 'tests/**', '.github/workflows/spel-test.yml']
+  pull_request:
+    paths: ['assets/spel*', 'spel.html', 'supabase/**', 'tests/**', '.github/workflows/spel-test.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: deadline_ci_only
+          POSTGRES_DB: deadline_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:deadline_ci_only@localhost:5432/deadline_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: node --check assets/spel.js && node --check assets/spel-config.js
+      - name: PostgreSQL schema and test case
+        run: |
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f tests/bootstrap.sql
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/01_schema.sql
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/02_demo.sql
+      - name: Authorization and game tests
+        run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f tests/database.sql
+      - name: Concurrent joins and dealing
+        run: python3 tests/concurrency.py
