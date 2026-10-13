@@ -15,7 +15,7 @@ begin
   if not public.deadline('create','{}') ? 'error' then raise exception 'Null identity accepted'; end if;
   for n in 4..8 loop
     perform set_config('request.jwt.claim.sub',md5('deadline-test-1')::uuid::text,true);
-    s := public.deadline('create',jsonb_build_object('name','Host','capacity',n));
+    s := public.deadline('create',jsonb_build_object('name','Host','capacity',n,'case_slug','demo-v1'));
     if s ? 'error' then raise exception 'Create failed: %',s; end if;
     gid := (s->>'id')::uuid; code := s->>'code';
     if s#>'{me,role}' <> 'null'::jsonb or s->'solution'<>'null'::jsonb then raise exception 'Secrets before dealing'; end if;
@@ -103,3 +103,4 @@ do $$ begin
   raise notice 'PASS: expired game denied';
 end $$;
 rollback;
+

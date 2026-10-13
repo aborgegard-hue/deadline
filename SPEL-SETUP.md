@@ -77,3 +77,13 @@ Officiell dokumentation:
 - https://supabase.com/docs/guides/auth/auth-captcha
 - https://supabase.com/pricing
 - https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits
+
+
+
+## Mörkvik version 1
+
+Nya spel använder ett fall för 3–6 personer. Kör `supabase/03_morkvik_engine.sql` efter första installationens schema. Manus och privata roller ska importeras direkt i den privata databasen. De ingår inte i detta publika repository.
+
+Rolluppsättningarna väljs genom slot 1–3, 1–4, 1–5 respektive 1–6. Den fasta mördaren ligger i slot 1. Servern kontrollerar exakt en mördare och blandar rollerna mellan deltagarna. Alla sex misstänkta kan väljas i slutanklagelsen. Privata roller och lösning hämtas som tidigare via den kontrollerade RPC-funktionen.
+
+Utredningen har 70 minuters timer. Första bevisgruppen öppnas vid start, andra efter 15 minuter och omröstning efter 50 minuter. Facit visas när alla röstat och värden avslutar, eller när någon avslutar efter 70 minuter. Ensam högsta röst för mördaren innebär vinst för de oskyldiga; delad topplacering innebär vinst för mördaren. Gamla demoomgångar behåller sina roller och tider.

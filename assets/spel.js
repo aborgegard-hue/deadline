@@ -143,7 +143,7 @@
     show('intro-panel', !lobby); text('introduction', s.introduction);
     show('role-panel', !!s.me.role && !finished); renderRole();
     show('ready', briefing && !s.me.ready);
-    show('clue-panel', playing || finished); show('vote-form', playing);
+    show('clue-panel', playing || finished); show('vote-form', playing && s.vote_open !== false);
     show('finish', !!s.can_finish); show('solution', finished);
     text('lobby-help', lobby ? 'Kontrollera att bara rätt personer är med. När rollerna delas ut låses gruppen.' : briefing ? 'Läs era roller privat. Läs sedan den gemensamma bakgrunden och låt värden starta.' : 'Privata hemligheter visas bara på respektive spelares mobil.');
     const people = s.players.map((p, index) => {
@@ -160,16 +160,21 @@
       return li;
     });
     $('players').replaceChildren(...people);
-    $('clues').replaceChildren(...s.clues.map(c => { const box = make('article', '', 'clue'); box.append(make('h4', c.title), make('p', c.body)); return box; }));
-    const selected = $('suspect').value || s.me.vote || '';
-    const options = [new Option('Välj en person', ''), ...s.players.map(p => new Option(p.persona || `Spelare ${s.players.indexOf(p) + 1}`, p.id))];
+    $('clues').replaceChildren(...s.clues.map(c => { const box = make('article', '', 'clue'); box.append(make('h4', c.title), make('p', c.body, 'prose')); return box; }));
+    const selected = $('suspect').value || s.me.vote_slot || s.me.vote || '';
+    const options = [new Option('Välj en person', ''), ...(s.suspects ? s.suspects.map(p => new Option(p.name, p.id)) : s.players.map(p => new Option(p.persona || `Spelare ${s.players.indexOf(p) + 1}`, p.id)))];
     $('suspect').replaceChildren(...options); $('suspect').value = selected;
     text('vote-status', s.me.voted ? 'Din slutanklagelse är låst. Inga andras val visas innan slutet.' : 'Du lämnar ditt val privat.');
     if (finished && s.solution) {
       text('solution-person', s.solution.persona);
       text('solution-text', s.solution.text);
       const killer = s.players.find(p => p.persona === s.solution.persona);
-      text('my-result', !s.me.vote ? 'Du lämnade ingen slutanklagelse.' : s.me.vote === killer?.id ? 'Du pekade ut rätt person.' : 'Du pekade ut en annan person.');
+      const ownVote = s.me.vote_slot || s.me.vote;
+      const correct = s.solution.slot ? String(ownVote) === s.solution.slot : ownVote === killer?.id;
+      const result = !ownVote ? 'Du lämnade ingen slutanklagelse.' : correct ? 'Du pekade ut rätt person.' : 'Du pekade ut en annan person.';
+      const outcome = s.solution.winner ? (s.solution.winner === 'innocents' ? ' De oskyldiga vinner.' : ' Mördaren vinner. Vid lika i toppen vinner mördaren.') : '';
+      const tally = s.solution.votes ? '\n' + s.solution.votes.map(v => `${v.name}: ${v.votes} röster`).join('\n') : '';
+      text('my-result', result + outcome + tally);
     }
     controls(); tick();
   }
@@ -250,7 +255,7 @@
   });
   $('vote-form').addEventListener('submit', e => {
     e.preventDefault();
-    if (confirm('Lås din slutanklagelse? Den kan inte ändras.')) act('vote', { player_id: $('suspect').value });
+    if (confirm('Lås din slutanklagelse? Den kan inte ändras.')) act('vote', state.suspects ? { suspect_slot: Number($('suspect').value) } : { player_id: $('suspect').value });
   });
   for (const action of ['deal', 'ready', 'start']) $(action).onclick = () => act(action);
   $('finish').onclick = () => { if (confirm('Avsluta utredningen och visa facit för alla?')) act('finish'); };
@@ -312,3 +317,4 @@
   }
   init().catch(e => { client = null; controls(); notice(e.message); });
 })();
+
