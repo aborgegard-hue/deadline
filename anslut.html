@@ -4,13 +4,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111110"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow">
 <title>Deadline UF &ndash; G&aring; med i spelet</title>
-<link rel="stylesheet" href="assets/spel.css">
-<script src="assets/spel-config.js" defer></script><script src="assets/spel.js?v=20261012-morkvik" defer></script>
+<link rel="stylesheet" href="assets/spel.css?v=20261023-jul-v2">
+<script src="assets/spel-config.js" defer></script><script src="assets/spel.js?v=20261023-jul-v2" defer></script>
 </head>
 <body>
 <header class="wrap top"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a></header>
 <main class="wrap">
-<section id="welcome" style="padding:32px 0 8px"><p class="eyebrow">Deadline UF / Inbjudan</p></section>
+<section id="welcome" style="padding:32px 0 8px"><p class="eyebrow">Deadline UF / Julvernissagen / Inbjudan</p></section>
 <div id="notice" class="notice" role="status" aria-live="polite">Kontrollerar anslutningen...</div>
 <noscript><p class="notice">Aktivera JavaScript f&ouml;r att anv&auml;nda spelrummet.</p></noscript>
 <section id="entry" aria-label="Anslut till ett spel">
@@ -33,8 +33,8 @@
 <section class="panel"><div class="section-title"><h3>Runt bordet</h3><span id="player-count" class="small"></span></div><ul id="players" class="players"></ul><p id="lobby-help" class="small"></p><button id="deal" type="button" hidden>Dela ut roller</button><button id="start" type="button" hidden>Starta utredningen</button><button id="leave" type="button" class="secondary" hidden>L&auml;mna lobbyn</button></section>
 <section id="intro-panel" class="panel" hidden><p class="eyebrow">L&auml;s tillsammans</p><h3>Fallet</h3><p id="introduction" class="prose"></p></section>
 </div><div>
-<section id="role-panel" class="panel private" hidden><p class="eyebrow">Bara f&ouml;r dig</p><h3>Ditt personkort.</h3><p class="small">H&aring;ll sk&auml;rmen f&ouml;r dig sj&auml;lv. Kortet d&ouml;ljs n&auml;r du byter flik.</p><button id="toggle-role" type="button" class="secondary" aria-expanded="false" aria-controls="role-content">Visa min roll</button><div id="role-content" hidden><h4 id="persona-name"></h4><p id="persona-job" class="small"></p><p id="murderer" class="notice"></p><div id="role-fields"></div></div><button id="ready" type="button" hidden>Jag har l&auml;st min roll &ndash; redo</button></section>
-<section id="clue-panel" class="panel" hidden><p class="eyebrow">Gemensam utredning</p><h3>Bevis som kommit in.</h3><div id="clues"></div><p class="small">&Ouml;ppna Ledtr&aring;dar vid start och F&ouml;rdjupande ledtr&aring;dar efter 15 minuter. Slutanklagelser &ouml;ppnas efter 50 minuter. Tiden styrs av servern.</p></section>
+<section id="role-panel" class="panel private" hidden><p class="eyebrow">Bara f&ouml;r dig</p><h3>Ditt personkort.</h3><p class="small">H&aring;ll sk&auml;rmen f&ouml;r dig sj&auml;lv. Kortet d&ouml;ljs n&auml;r du byter flik. Här finns också din privata observation och din täckhistoria.</p><button id="toggle-role" type="button" class="secondary" aria-expanded="false" aria-controls="role-content">Visa min roll</button><div id="role-content" hidden><h4 id="persona-name"></h4><p id="persona-job" class="small"></p><p id="murderer" class="notice"></p><div id="role-fields"></div></div><button id="ready" type="button" hidden>Jag har l&auml;st min roll &ndash; redo</button></section>
+<section id="clue-panel" class="panel" hidden><p class="eyebrow">Gemensam utredning</p><h3>Bevis som kommit in.</h3><div id="clues"></div><p class="small">Öppna A1–A6 vid start. Efter 15 minuter öppnas B1–B3 och B5–B6. Låt B4 vara förseglat till minut 45. Slutanklagelser öppnas vid minut 50. Alla sex gäster går att anklaga. Följ personkortets regler och välj när du delar din privata observation.</p></section>
 </div></div>
 <form id="vote-form" class="panel" hidden><p class="eyebrow">Din slutanklagelse</p><h3>Vem pekar du ut?</h3><p>Diskutera g&auml;rna motiv och bevis f&ouml;rst. Alla sex karakt&auml;rer g&aring;r att v&auml;lja. Ditt val l&aring;ses n&auml;r du skickar det.</p><label for="suspect">Misst&auml;nkt</label><select id="suspect" required></select><button id="vote" type="submit">L&auml;mna min slutanklagelse</button><p id="vote-status" class="small"></p></form>
 <button id="finish" type="button" hidden>Avsluta och visa facit</button>
@@ -44,4 +44,5 @@
 <p class="footnote">Detta &auml;r f&ouml;rsta spelversionen av M&ouml;rkvik. Spelbalansen ska utv&auml;rderas genom testspelning. Spelomg&aring;ngen kan &ouml;ppnas i 24 timmar. Inga mejladresser eller betaluppgifter beh&ouml;vs.</p>
 </main><footer class="wrap">DEADLINE UF / Alla &auml;r misst&auml;nkta.</footer>
 </body></html>
+
 

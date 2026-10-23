@@ -126,8 +126,8 @@
     if (!role || !roleVisible) return;
     text('persona-name', role.name); text('persona-job', role.occupation);
     text('murderer', role.is_murderer ? 'Du är mördaren. Håll det hemligt.' : 'Du är oskyldig till mordet.');
-    for (const [field, title] of [['background','Vem du är'],['knows','Vad du vet'],['secret','Din hemlighet'],['objective','Ditt mål'],['rules','Dina regler']]) {
-      $('role-fields').append(make('h5', title), make('p', role[field]));
+    for (const [field, title] of [['background','Vem du är'],['knows','Vad som faktiskt hände'],['secret','Din hemlighet'],['private_clue','Bara du vet detta'],['alibi','Ditt alibi och din täckhistoria'],['objective','Ditt mål'],['rules','Dina regler']]) {
+      if (role[field]) $('role-fields').append(make('h5', title), make('p', role[field], 'prose'));
     }
   }
   function render() {
@@ -317,4 +317,5 @@
   }
   init().catch(e => { client = null; controls(); notice(e.message); });
 })();
+
 

@@ -80,10 +80,16 @@ Officiell dokumentation:
 
 
 
-## Mörkvik version 1
+## Julvernissagen på Mörkvik
 
 Nya spel använder ett fall för 3–6 personer. Kör `supabase/03_morkvik_engine.sql` efter första installationens schema. Manus och privata roller ska importeras direkt i den privata databasen. De ingår inte i detta publika repository.
 
-Rolluppsättningarna väljs genom slot 1–3, 1–4, 1–5 respektive 1–6. Servern kontrollerar exakt en mördare och blandar rollerna mellan deltagarna. Alla sex misstänkta kan väljas i slutanklagelsen. Privata roller och lösning hämtas som tidigare via den kontrollerade RPC-funktionen.
+Servern tilldelar rollerna och blandar dem mellan deltagarna. Den interna fördelningen och lösningen hör till det privata manusunderlaget. Alla sex misstänkta kan väljas i slutanklagelsen. Privata roller och lösning hämtas som tidigare via den kontrollerade RPC-funktionen.
 
-Utredningen har 70 minuters timer. Första bevisgruppen öppnas vid start, andra efter 15 minuter och omröstning efter 50 minuter. Facit visas när alla röstat och värden avslutar, eller när någon avslutar efter 70 minuter. Ensam högsta röst för mördaren innebär vinst för de oskyldiga; delad topplacering innebär vinst för mördaren. Gamla demoomgångar behåller sina roller och tider.
+Utredningen har 70 minuters timer. A1–A6 öppnas vid start, B1–B3 och B5–B6 efter 15 minuter, B4 efter 45 minuter och omröstning efter 50 minuter. Facit visas när alla röstat och värden avslutar, eller när någon avslutar efter 70 minuter. Ensam högsta röst för mördaren innebär vinst för de oskyldiga; delad topplacering innebär vinst för mördaren. Gamla demoomgångar behåller sina roller och tider.
+
+
+
+### Julversionens privata personkort
+
+Utöver bakgrund och hemlighet visas `private_clue` (Bara du vet detta) och `alibi` (Ditt alibi och din täckhistoria). Fälten returneras enbart i spelarens egen roll. Äldre demokort utan fälten fungerar också. Importera rolltexter, introduktion, samtliga bevis och lösning som en sammanhängande manusversion. Marknadsföringen lyder ”En av er kan vara mördaren”.

@@ -4,18 +4,18 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111110"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow">
 <title>Deadline UF &ndash; Spelrummet</title>
-<link rel="stylesheet" href="assets/spel.css">
+<link rel="stylesheet" href="assets/spel.css?v=20261023-jul-v2">
 <script>if(new URLSearchParams(location.search).has('kod')){document.documentElement.hidden=true;location.replace('anslut.html'+location.search);}</script>
-<script src="assets/spel-config.js" defer></script><script src="assets/spel.js?v=20261012-morkvik" defer></script>
+<script src="assets/spel-config.js" defer></script><script src="assets/spel.js?v=20261023-jul-v2" defer></script>
 </head>
 <body>
-<header class="wrap top"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a><nav aria-label="Huvudmeny"><a href="index.html">Startsidan</a><a href="timer.html">Timertest &nearr;</a></nav></header>
+<header class="wrap top"><a class="logo" href="index.html">DEADLINE<span>.</span> UF</a><nav aria-label="Huvudmeny"><a href="index.html">Startsidan</a><a href="index.html#sa-funkar-det">Så fungerar det</a></nav></header>
 <main class="wrap">
-<section class="heading" id="welcome"><p class="eyebrow">Spelrummet / Mörkvik</p><h1>En av er<br><em>vet mer.</em></h1><p class="lead">Samma bord. Olika hemligheter.<br>En privat roll i varje mobil.</p></section>
+<section class="heading" id="welcome"><p class="eyebrow">Spelrummet / Julvernissagen</p><h1>En av er<br><em>kan vara mördaren.</em></h1><p class="lead">Samma bord. Olika hemligheter.<br>En privat roll i varje mobil.</p></section>
 <div id="notice" class="notice" role="status" aria-live="polite">Kontrollerar anslutningen...</div>
 <noscript><p class="notice">Aktivera JavaScript f&ouml;r att anv&auml;nda spelrummet.</p></noscript>
 <section id="entry" aria-label="Anslut till ett spel">
-<p class="note">Mordet p&aring; M&ouml;rkviks herrg&aring;rd f&ouml;r 3&ndash;6 personer, cirka 60&ndash;90 minuter. Du f&aring;r ditt namn i spelet n&auml;r rollerna delas ut. Anv&auml;nd samma webbl&auml;sare hela spelet. Anv&auml;nd inte privat l&auml;ge och rensa inte webbdata under omg&aring;ngen.</p>
+<p class="note">Julvernissagen på Mörkvik f&ouml;r 3&ndash;6 personer, cirka 60&ndash;90 minuter. Du f&aring;r ditt namn i spelet n&auml;r rollerna delas ut. Anv&auml;nd samma webbl&auml;sare hela spelet. Anv&auml;nd inte privat l&auml;ge och rensa inte webbdata under omg&aring;ngen.</p>
 <button id="resume" type="button" class="secondary" hidden>Forts&auml;tt senaste spelet</button>
 <div id="captcha"></div>
 <div class="entry-grid">
@@ -36,15 +36,16 @@
 <section class="panel"><div class="section-title"><h3>Runt bordet</h3><span id="player-count" class="small"></span></div><ul id="players" class="players"></ul><p id="lobby-help" class="small"></p><button id="deal" type="button" hidden>Dela ut roller</button><button id="start" type="button" hidden>Starta utredningen</button><button id="leave" type="button" class="secondary" hidden>L&auml;mna lobbyn</button></section>
 <section id="intro-panel" class="panel" hidden><p class="eyebrow">L&auml;s tillsammans</p><h3>Fallet</h3><p id="introduction" class="prose"></p></section>
 </div><div>
-<section id="role-panel" class="panel private" hidden><p class="eyebrow">Bara f&ouml;r dig</p><h3>Ditt personkort.</h3><p class="small">H&aring;ll sk&auml;rmen f&ouml;r dig sj&auml;lv. Kortet d&ouml;ljs n&auml;r du byter flik.</p><button id="toggle-role" type="button" class="secondary" aria-expanded="false" aria-controls="role-content">Visa min roll</button><div id="role-content" hidden><h4 id="persona-name"></h4><p id="persona-job" class="small"></p><p id="murderer" class="notice"></p><div id="role-fields"></div></div><button id="ready" type="button" hidden>Jag har l&auml;st min roll &ndash; redo</button></section>
-<section id="clue-panel" class="panel" hidden><p class="eyebrow">Gemensam utredning</p><h3>Era ledtr&aring;dar.</h3><div id="clues"></div><p class="small">&Ouml;ppna Ledtr&aring;dar n&auml;r utredningen startar. &Ouml;ppna F&ouml;rdjupande ledtr&aring;dar efter 15 minuter. L&aring;t B4-bladet vara f&ouml;rseglat till minut 45; d&aring; visas det &auml;ven h&auml;r. Samma bevis visas h&auml;r som text. Slutanklagelser &ouml;ppnas efter 50 minuter. Tiden styrs av servern.</p></section>
+<section id="role-panel" class="panel private" hidden><p class="eyebrow">Bara f&ouml;r dig</p><h3>Ditt personkort.</h3><p class="small">H&aring;ll sk&auml;rmen f&ouml;r dig sj&auml;lv. Kortet d&ouml;ljs n&auml;r du byter flik. Här finns också din privata observation och din täckhistoria.</p><button id="toggle-role" type="button" class="secondary" aria-expanded="false" aria-controls="role-content">Visa min roll</button><div id="role-content" hidden><h4 id="persona-name"></h4><p id="persona-job" class="small"></p><p id="murderer" class="notice"></p><div id="role-fields"></div></div><button id="ready" type="button" hidden>Jag har l&auml;st min roll &ndash; redo</button></section>
+<section id="clue-panel" class="panel" hidden><p class="eyebrow">Gemensam utredning</p><h3>Era ledtr&aring;dar.</h3><div id="clues"></div><p class="small">Öppna A1–A6 vid start. Efter 15 minuter öppnas B1–B3 och B5–B6. Låt B4 vara förseglat till minut 45. Slutanklagelser öppnas vid minut 50. Alla sex gäster går att anklaga. Följ personkortets regler och välj när du delar din privata observation.</p></section>
 </div></div>
 <form id="vote-form" class="panel" hidden><p class="eyebrow">Din slutanklagelse</p><h3>Vem pekar du ut?</h3><p>Diskutera g&auml;rna motiv och bevis f&ouml;rst. V&auml;lj bland alla sex karakt&auml;rer, &auml;ven personer som ingen spelar. Ditt val l&aring;ses n&auml;r du skickar det.</p><label for="suspect">Misst&auml;nkt</label><select id="suspect" required></select><button id="vote" type="submit">L&auml;mna min slutanklagelse</button><p id="vote-status" class="small"></p></form>
 <button id="finish" type="button" hidden>Avsluta och visa facit</button>
 <section id="solution" class="panel" hidden><p class="eyebrow">Fallet avslutat</p><h3 id="solution-person"></h3><p id="solution-text" class="prose"></p><p id="my-result" class="prose"></p><button id="new-game" type="button" class="secondary">Tillbaka till start</button></section>
 <button id="back" type="button" class="text-button">Till startsidan f&ouml;r spelrummet</button>
 </section>
-<p class="footnote">Detta &auml;r f&ouml;rsta spelversionen av M&ouml;rkvik. Spelbalansen ska utv&auml;rderas genom testspelning. Spelomg&aring;ngen kan &ouml;ppnas i 24 timmar. Inga mejladresser eller betaluppgifter beh&ouml;vs.</p>
+<p class="footnote">Julversionen av Mörkvik. Spelbalansen ska utv&auml;rderas genom testspelning. Spelomg&aring;ngen kan &ouml;ppnas i 24 timmar. Inga mejladresser eller betaluppgifter beh&ouml;vs.</p>
 </main><footer class="wrap">DEADLINE UF / Alla &auml;r misst&auml;nkta.</footer>
 </body></html>
+
 
