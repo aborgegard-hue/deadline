@@ -43,7 +43,7 @@ begin
   end if;
   return jsonb_build_object(
     'id',g.id,'code',g.code,'phase',g.phase,'capacity',g.capacity,
-    'title',c.title,'introduction',c.introduction,'server_now',clock_timestamp(),
+    'title',c.title,'introduction',case when g.case_slug='morkvik-v1' then null else c.introduction end,'server_now',clock_timestamp(),
     'started_at',g.started_at,'duration_seconds',c.duration_seconds,'expires_at',g.expires_at,
     'me',jsonb_build_object('id',me.id,'name',me.name,'is_host',g.host_uid=auth.uid(),
       'role',me.role,'ready',me.ready,'voted',me.vote is not null or me.vote_slot is not null,'vote',me.vote,'vote_slot',me.vote_slot),

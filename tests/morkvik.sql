@@ -11,6 +11,7 @@ begin
   s:=public.deadline('create',jsonb_build_object('name','Host','capacity',n));
   if s ? 'error' then raise exception 'create %: %',n,s; end if;
   gid:=(s->>'id')::uuid;code:=s->>'code';
+  if s->'introduction'<>'null'::jsonb then raise exception 'paper introduction sent to client';end if;
   if jsonb_array_length(s->'suspects')<>6 then raise exception 'six suspects missing'; end if;
   if s->'solution'<>'null'::jsonb then raise exception 'early solution'; end if;
   for i in 2..n loop

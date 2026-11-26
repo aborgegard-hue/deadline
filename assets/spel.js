@@ -141,7 +141,6 @@
     show('invite', lobby); if (lobby) drawQr();
     show('clock-box', playing); show('deal', lobby && s.me.is_host);
     show('start', briefing && s.me.is_host); show('leave', lobby && !s.me.is_host);
-    show('intro-panel', !lobby); text('introduction', s.introduction);
     show('role-panel', !!s.me.role && !finished); renderRole();
     show('ready', briefing && !s.me.ready);
     show('flow-panel', lobby || briefing); show('clue-panel', playing);
