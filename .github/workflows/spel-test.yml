@@ -35,6 +35,7 @@ jobs:
           psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/01_schema.sql
           psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/02_demo.sql
           psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/03_morkvik_engine.sql
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/04_host_voting.sql
           psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f tests/morkvik_fixture.sql
       - name: Authorization and game tests
         run: psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f tests/database.sql

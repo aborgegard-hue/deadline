@@ -45,7 +45,8 @@
     $('deal').disabled = off || state.players.length !== state.capacity;
     $('ready').disabled = off || state.me.ready;
     $('start').disabled = off || !state.can_start;
-    $('vote').disabled = off || state.me.voted;
+    $('vote').disabled = off || state.me.voted || !state.vote_open;
+    $('open-vote').disabled = off || !state.can_open_vote;
     $('suspect').disabled = off || state.me.voted;
     $('finish').disabled = off || !state.can_finish;
     $('leave').disabled = off;
@@ -143,7 +144,8 @@
     show('intro-panel', !lobby); text('introduction', s.introduction);
     show('role-panel', !!s.me.role && !finished); renderRole();
     show('ready', briefing && !s.me.ready);
-    show('clue-panel', playing || finished); show('vote-form', playing && s.vote_open !== false);
+    show('flow-panel', lobby || briefing); show('clue-panel', playing);
+    show('voting-panel', playing); show('open-vote', playing && s.me.is_host && !s.vote_open); show('vote-form', playing && s.vote_open !== false);
     show('finish', !!s.can_finish); show('solution', finished);
     text('lobby-help', lobby ? 'Kontrollera att bara rätt personer är med. När rollerna delas ut låses gruppen.' : briefing ? 'Läs era roller privat. Läs sedan den gemensamma bakgrunden och låt värden starta.' : 'Privata hemligheter visas bara på respektive spelares mobil.');
     const people = s.players.map((p, index) => {
@@ -160,7 +162,7 @@
       return li;
     });
     $('players').replaceChildren(...people);
-    $('clues').replaceChildren(...s.clues.map(c => { const box = make('article', '', 'clue'); box.append(make('h4', c.title), make('p', c.body, 'prose')); return box; }));
+
     const selected = $('suspect').value || s.me.vote_slot || s.me.vote || '';
     const options = [new Option('Välj en person', ''), ...(s.suspects ? s.suspects.map(p => new Option(p.name, p.id)) : s.players.map(p => new Option(p.persona || `Spelare ${s.players.indexOf(p) + 1}`, p.id)))];
     $('suspect').replaceChildren(...options); $('suspect').value = selected;
@@ -181,6 +183,12 @@
   function tick() {
     if (!state?.started_at || state.phase !== 'playing') return;
     const serverNow = syncServerTime + performance.now() - syncPerformance;
+    const elapsed = (serverNow - Date.parse(state.started_at)) / 1000;
+    text('bundle-status', elapsed < 900 ? 'Öppna startbunten A1–A6. Nästa bunt öppnas efter 15 minuter.' : elapsed < 2700 ? 'Bunten för 15 minuter får öppnas: B1–B3 och B5–B6. Håll B4 stängd till minut 45.' : 'Nu får även B4 öppnas. Läs de sista handlingarna och jämför med tidigare bevis.');
+    const wait = Math.max(0, Math.ceil((Date.parse(state.vote_unlock_at) - serverNow) / 1000));
+    const remaining = `${Math.floor(wait / 60)}:${String(wait % 60).padStart(2, '0')}`;
+    text('open-vote', wait > 0 ? `Röstningen är låst · ${remaining} kvar` : 'Öppna röstningen för alla');
+    text('voting-help', state.vote_open ? 'Röstningen är öppen. Var och en röstar privat i sin mobil. När alla röstat kan värden visa lösningen.' : wait > 0 ? `Undersök fallet först. Röstningen kan öppnas om ${remaining}.` : state.me.is_host ? 'Ni kan öppna röstningen när gruppen är redo. Vänta gärna tills alla pappersbevis har lästs.' : 'Väntar på att värden öppnar röstningen. Fortsätt diskutera och granska bevisen.');
     const end = Date.parse(state.started_at) + state.duration_seconds * 1000;
     const seconds = Math.max(0, Math.ceil((end - serverNow) / 1000));
     text('clock', `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`);
@@ -255,9 +263,14 @@
   });
   $('vote-form').addEventListener('submit', e => {
     e.preventDefault();
-    if (confirm('Lås din slutanklagelse? Den kan inte ändras.')) act('vote', state.suspects ? { suspect_slot: Number($('suspect').value) } : { player_id: $('suspect').value });
+    if (confirm((syncServerTime + performance.now() - syncPerformance - Date.parse(state.started_at) < 2700000 ? 'B4 öppnas först efter 45 minuter. Du saknar ännu de sista handlingarna. ' : '') + 'Lås din slutanklagelse? Den kan inte ändras.')) act('vote', state.suspects ? { suspect_slot: Number($('suspect').value) } : { player_id: $('suspect').value });
   });
   for (const action of ['deal', 'ready', 'start']) $(action).onclick = () => act(action);
+  $('open-vote').onclick = () => {
+    const elapsed = (syncServerTime + performance.now() - syncPerformance - Date.parse(state.started_at)) / 1000;
+    const message = elapsed < 2700 ? 'B4 öppnas först efter 45 minuter. Ni har ännu inte fått de sista handlingarna. Vill ni ändå öppna röstningen? Varje inskickad röst är slutgiltig.' : 'Har alla fått tid att läsa bevisen och diskutera? Öppna röstningen för alla?';
+    if (confirm(message)) act('open_vote');
+  };
   $('finish').onclick = () => { if (confirm('Avsluta utredningen och visa facit för alla?')) act('finish'); };
   $('leave').onclick = () => { if (confirm('Lämna den här lobbyn?')) act('leave'); };
   $('toggle-role').onclick = () => { roleVisible = !roleVisible; renderRole(); };

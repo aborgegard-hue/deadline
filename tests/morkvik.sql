@@ -40,17 +40,30 @@ begin
   if killers<>1 then raise exception 'expected exactly one murderer';end if;
   perform set_config('request.jwt.claim.sub',ids[1]::text,true);
   s:=public.deadline('start',jsonb_build_object('game_id',gid));
-  if jsonb_array_length(s->'clues')<>6 then raise exception 'wrong first clue count';end if;
+  if jsonb_array_length(s->'clues')<>0 then raise exception 'wrong first clue count';end if;
   if not public.deadline('vote',jsonb_build_object('game_id',gid,'suspect_slot',1)) ? 'error' then raise exception 'early vote accepted';end if;
   execute 'reset role';
   update deadline_private.games set started_at=now()-interval '15 minutes' where id=gid;
   execute 'set local role authenticated';
   s:=public.deadline('state',jsonb_build_object('game_id',gid));
-  if jsonb_array_length(s->'clues')<>12 then raise exception 'second clues failed';end if;
+  if jsonb_array_length(s->'clues')<>0 then raise exception 'second clues failed';end if;
   if (s->>'vote_open')::boolean then raise exception 'vote unlocked early';end if;
   execute 'reset role';
-  update deadline_private.games set started_at=now()-interval '50 minutes' where id=gid;
+  update deadline_private.games set started_at=now()-interval '29 minutes 59 seconds' where id=gid;
   execute 'set local role authenticated';
+  if not public.deadline('open_vote',jsonb_build_object('game_id',gid)) ? 'error' then raise exception 'early open accepted';end if;
+  execute 'reset role';
+  update deadline_private.games set started_at=now()-interval '30 minutes' where id=gid;
+  execute 'set local role authenticated';
+  if not public.deadline('vote',jsonb_build_object('game_id',gid,'suspect_slot',1)) ? 'error' then raise exception 'vote accepted before host opens';end if;
+  perform set_config('request.jwt.claim.sub',ids[2]::text,true);
+  if not public.deadline('open_vote',jsonb_build_object('game_id',gid)) ? 'error' then raise exception 'guest opened voting';end if;
+  perform set_config('request.jwt.claim.sub',ids[1]::text,true);
+  s:=public.deadline('open_vote',jsonb_build_object('game_id',gid));
+  if not (s->>'vote_open')::boolean then raise exception 'host cannot open at 30: %',s;end if;
+  s:=public.deadline('state',jsonb_build_object('game_id',gid));
+  if not (s->>'vote_open')::boolean then raise exception 'vote opening lost on reload';end if;
+  if not public.deadline('finish',jsonb_build_object('game_id',gid)) ? 'error' then raise exception 'finish accepted before votes';end if;
   if n=3 then
    -- Slot 6 is passive with three players and must remain a valid choice.
    r:=public.deadline('vote',jsonb_build_object('game_id',gid,'suspect_slot',6));
